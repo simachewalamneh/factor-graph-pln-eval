@@ -1,15 +1,5 @@
-"""
-Parity-3-specific belief propagation.
-
-This file now just BUILDS the parity-specific direct/correlation
-TruthValues (via beta_graph.py) and hands them to the shared, reusable
-engine in propagation_engine.py. All the actual PLN chaining logic lives
-there, so the bonus (relational frame-space) task can reuse it too.
-"""
-
 from beta_graph import build_direct_evidence_beliefs, build_correlation_factors
 from propagation_engine import propagate_generic
-
 
 def propagate(top_k_anchors=5):
     direct_beliefs, outputs = build_direct_evidence_beliefs()
