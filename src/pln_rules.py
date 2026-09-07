@@ -1,4 +1,3 @@
-
 from truth_value import TruthValue
 DEDUCTION_DISCOUNT = 0.9
 INDUCTION_DISCOUNT = 0.8

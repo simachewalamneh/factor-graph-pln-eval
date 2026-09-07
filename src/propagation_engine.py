@@ -1,5 +1,4 @@
 from itertools import combinations
-
 from pln_rules import deduction, induction, abduction, revision
 
 def propagate_generic(direct_tv, corr_tv, top_k_anchors=5):

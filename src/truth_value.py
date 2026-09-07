@@ -33,6 +33,5 @@ class BetaBelief:
         """Beta-Bernoulli conjugate update: additive in successes/failures."""
         return BetaBelief(self.alpha + successes, self.beta + failures)
 
-
 def beta_from_counts(successes, failures):
     return BetaBelief(PRIOR_ALPHA + successes, PRIOR_BETA + failures)

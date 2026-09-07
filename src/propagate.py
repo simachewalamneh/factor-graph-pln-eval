@@ -9,7 +9,6 @@ def propagate(top_k_anchors=5):
 
     return propagate_generic(direct_tv, corr_tv, top_k_anchors=top_k_anchors)
 
-
 if __name__ == "__main__":
     result = propagate()
     print(f"Anchors used for propagation: {result['anchors']}\n")
