@@ -40,7 +40,7 @@ relative imports.
 
 ### 1. Main task (dense baseline)
 ```bash
-cd src
+cd Parity3_prob
 python3 main.py
 ```
 No third-party dependencies — pure Python 3 standard library.
@@ -193,3 +193,5 @@ is computed and never used.
   measured accuracy on this dataset was poor** (Spearman rank correlation
   near zero or negative against the exact result) — see `RESULTS.md` for
   why, and why we recommend Tier 1 but not Tier 2 as currently built.
+
+   **Reference Note:** For a detailed conceptual explanation of **Factor Graphs, Probabilistic Logic Networks (PLN), and Belief Propagation** in the Parity-3 evaluation task, see **[Factor Graphs, Probabilistic Logic Networks, and Belief Propagation: A Conceptual Note on the Parity-3 Evaluation Task](https://drive.google.com/file/d/1GSsIdfltzd7NeBgztQN__QOD0mMzOyf5/view?usp=sharing)**.

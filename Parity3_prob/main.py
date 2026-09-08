@@ -45,8 +45,7 @@ def main():
         "truth table. So confidence grows too fast and becomes misleading. "
         "A better version would use fewer, truly independent estimates "
         "per candidate instead of combining every one we generated."
-    )
-    
+    ) 
 
 if __name__ == "__main__":
     main()

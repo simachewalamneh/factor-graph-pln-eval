@@ -5,7 +5,6 @@ from beta_graph import (
 )
 from propagation_engine import propagate_generic, select_anchors
 
-
 def propagate_topk(top_k_anchors=5, k_neighbors=8):
     direct_beliefs, outputs = build_direct_evidence_beliefs()
     direct_tv = {i: b.to_truth_value() for i, b in direct_beliefs.items()}
