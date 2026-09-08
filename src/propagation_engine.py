@@ -12,7 +12,7 @@ def propagate_generic(direct_tv, corr_tv, top_k_anchors=5):
     )[:top_k_anchors]
 
     all_nodes = list(direct_tv.keys())
-    estimates = {j: [direct_tv[j]] for j in all_nodes}  # start with direct evidence
+    estimates = {j: [direct_tv[j]] for j in all_nodes} # start with direct evidence
 
     # Deduction
     for i in anchors:
