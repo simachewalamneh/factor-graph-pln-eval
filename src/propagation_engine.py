@@ -1,20 +1,25 @@
 from itertools import combinations
 from pln_rules import deduction, induction, abduction, revision
 
-def propagate_generic(direct_tv, corr_tv, top_k_anchors=5):
-    def corr(i, j):
-        return corr_tv.get((i, j)) or corr_tv.get((j, i))
-
-    anchors = sorted(
+def select_anchors(direct_tv, top_k_anchors=5):
+    return sorted(
         direct_tv.keys(),
         key=lambda i: abs(direct_tv[i].strength - 0.5),
         reverse=True,
     )[:top_k_anchors]
 
-    all_nodes = list(direct_tv.keys())
-    estimates = {j: [direct_tv[j]] for j in all_nodes} # start with direct evidence
+def propagate_generic(direct_tv, corr_tv, top_k_anchors=5, anchors=None):
 
-    # Deduction
+    def corr(i, j):
+        return corr_tv.get((i, j)) or corr_tv.get((j, i)) #handling an undirected pair
+
+    if anchors is None:
+        anchors = select_anchors(direct_tv, top_k_anchors)
+
+    all_nodes = list(direct_tv.keys())
+    estimates = {j: [direct_tv[j]] for j in all_nodes}  # start with direct evidence
+
+    # Deduction: anchor "is true" -> anchor "correlates with j" => j "is true"
     for i in anchors:
         for j in all_nodes:
             if i == j:
@@ -24,7 +29,7 @@ def propagate_generic(direct_tv, corr_tv, top_k_anchors=5):
                 continue
             estimates[j].append(deduction(direct_tv[i], tv_ij))
 
-    # Induction & Abduction
+    # Induction & Abduction: use pairs of anchors as the shared reference point
     for a1, a2 in combinations(anchors, 2):
         for j in all_nodes:
             if j in (a1, a2):
@@ -38,7 +43,7 @@ def propagate_generic(direct_tv, corr_tv, top_k_anchors=5):
                 estimates[j].append(induction(tv_a1_a2, tv_a1_j))
             estimates[j].append(abduction(tv_a1_j, tv_a2_j))
 
-    #  Revision 
+    # Revision: merge every independent-in-principle estimate for node j
     final = {}
     for j, tv_list in estimates.items():
         merged = tv_list[0]
