@@ -40,9 +40,7 @@ rather than noise.
 
 ## Diagram
 
-See [`diagrams/frame_graph.md`](diagrams/frame_graph.md) for the graph
-structure — direct-evidence factors, explicit (parentID) links, implicit
-(similarity) links, and the propagation step.
+See `diagrams/frame_graph_render.png` for the graph structure — direct-evidence factors, explicit (parentID) links, implicit (similarity) links, and the propagation step.
 
 ## Running it
 
