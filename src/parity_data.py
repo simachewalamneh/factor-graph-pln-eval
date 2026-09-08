@@ -25,7 +25,7 @@ def eval_expr(expr, values):
     if op == "OR":
         return eval_expr(expr[1], values) | eval_expr(expr[2], values)
     raise ValueError(f"Unknown op: {op}")
-# The hypothesis 
+#The hypothesis 
 CANDIDATES = {
     1: ("AND", "A", ("OR", "B", "C")),
     2: ("OR", ("AND", "A", "B"), "C"),
@@ -65,3 +65,7 @@ if __name__ == "__main__":
         out = evaluate_candidate(expr)
         agree = sum(1 for x, y in zip(out, truth) if x == y) # compare against truth
         print(f"{idx:>3}  {''.join(map(str, out))}   {agree}/8 agree")
+           #[0, 0, 0, 0, 0, 1, 1, 1] for each candidate
+           #   #  outputs     matches truth?
+           #  00000111    3/8
+  
