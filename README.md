@@ -108,7 +108,6 @@ cd src && python3 main.py > /dev/null \
 ```
 
 ## Key results (summary)
-
 - No candidate perfectly matches parity by direct evidence (expected —
   parity isn't representable by these low-arity AND/OR/NOT combinations,
   which is exactly why this is a genuinely *uncertain* reasoning problem
