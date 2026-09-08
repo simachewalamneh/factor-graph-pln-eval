@@ -25,7 +25,7 @@ def eval_expr(expr, values):
     if op == "OR":
         return eval_expr(expr[1], values) | eval_expr(expr[2], values)
     raise ValueError(f"Unknown op: {op}")
-# this is the hypothesis space
+# The hypothesis 
 CANDIDATES = {
     1: ("AND", "A", ("OR", "B", "C")),
     2: ("OR", ("AND", "A", "B"), "C"),
