@@ -156,7 +156,7 @@ is now just a thin wrapper that builds parity-specific `TruthValue`s and
 hands them to this shared engine. This is what makes the bonus task
 possible without duplicating any PLN logic — see `relational_frame_task/`.
 
-## Bonus: relational frame-space task (implemented)
+## Relational frame-space task (Bonus)
 
 See [`relational_frame_task/`](relational_frame_task/) — implements the
 frame-space task using the real Context-Frame data sets from the deck, a
