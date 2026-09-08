@@ -2,7 +2,7 @@ from truth_value import TruthValue
 DEDUCTION_DISCOUNT = 0.9
 INDUCTION_DISCOUNT = 0.8
 ABDUCTION_DISCOUNT = 0.8
-DEFAULT_S_B = 0.5
+DEFAULT_S_B = 0.5 #neutral prior assumption.
 
 def _chain_confidence(c1, c2, discount):
     return discount * min(c1, c2)
@@ -37,6 +37,6 @@ def revision(tv1: TruthValue, tv2: TruthValue) -> TruthValue:
     if total_c <= 1e-9:
         strength = (tv1.strength + tv2.strength) / 2
     else:
-        strength = (tv1.strength * c1 + tv2.strength * c2) / total_c
+        strength = (tv1.strength * c1 + tv2.strength * c2) / total_c #2 #confidence-weighted average.
     confidence = 1 - (1 - c1) * (1 - c2)
     return TruthValue(strength, confidence)
