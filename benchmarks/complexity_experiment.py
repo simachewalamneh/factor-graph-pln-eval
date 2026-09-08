@@ -1,22 +1,3 @@
-"""
-The experimental comparison this project's complexity-reduction claims
-depend on. Two SEPARATE experiments, deliberately not conflated:
-
-  1. ACCURACY/QUALITY, on the REAL 20-candidate Parity-3 data. This is
-     the only data where "quality" is a meaningful question. Compares
-     each variant's final beliefs against Tier 1 (exact) as the trusted
-     reference -- not against some unknowable ground truth, since Tier 1
-     is PROVEN identical to the original dense baseline (propagate_sparse.py).
-
-  2. RUNTIME SCALING, on SYNTHETIC data. At the real n=20, dense O(n^2)
-     vs sparse O(k*n) construction differs by microseconds -- not a
-     meaningful measurement, and reporting it as if it mattered would be
-     dishonest. This experiment instead generates synthetic candidate
-     sets of increasing size purely to confirm the predicted asymptotic
-     trend, clearly labeled as synthetic throughout.
-
-Run with:  python3 complexity_experiment.py
-"""
 
 import os
 import random
@@ -39,17 +20,9 @@ from propagate import propagate as propagate_dense  # noqa: E402
 from propagate_sparse import propagate_sparse  # noqa: E402
 from propagate_tier2 import propagate_topk, propagate_threshold  # noqa: E402
 
-
-# ===========================================================================
 # Experiment 1: accuracy/quality on the REAL Parity-3 data
-# ===========================================================================
 
 def spearman_rank_correlation(values_a, values_b):
-    """
-    Plain-Python Spearman rank correlation (no scipy dependency): rank
-    both lists, then compute Pearson correlation of the ranks.
-    values_a, values_b: parallel lists of numbers for the same items.
-    """
     def ranks(values):
         order = sorted(range(len(values)), key=lambda i: values[i])
         r = [0] * len(values)
@@ -115,13 +88,6 @@ def run_accuracy_experiment():
 
     return rows
 
-
-# ===========================================================================
-# Experiment 2: runtime scaling on SYNTHETIC data (n=20 is too small to
-# show a meaningful wall-clock difference -- this experiment exists only
-# to confirm the predicted O(n^2) vs O(k*n) asymptotic trend)
-# ===========================================================================
-
 def synthetic_outputs(n_candidates, n_rows=8, seed=0):
     rng = random.Random(seed)
     return {i: [rng.randint(0, 1) for _ in range(n_rows)] for i in range(n_candidates)}
@@ -134,10 +100,6 @@ def time_dense_construction(outputs):
 
 
 def time_sparse_construction(outputs, top_k_anchors=5):
-    # Anchors need SOME direct-evidence-like ranking; for this synthetic
-    # timing test we don't have a "truth" to compare against, so anchors
-    # are just an arbitrary fixed subset -- the timing of CONSTRUCTION
-    # doesn't depend on which specific nodes are anchors, only on how many.
     anchors = list(outputs.keys())[:top_k_anchors]
     start = time.perf_counter()
     build_correlation_factors_sparse(outputs, anchors)
