@@ -1,4 +1,3 @@
-
 from beta_graph import build_direct_evidence_beliefs, build_correlation_factors_sparse
 from propagation_engine import propagate_generic, select_anchors
 
