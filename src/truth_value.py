@@ -23,7 +23,7 @@ class BetaBelief:
     @property
     def evidence_count(self):
         return (self.alpha + self.beta) - (PRIOR_ALPHA + PRIOR_BETA)
-
+        #bridge between Beta and PLN:
     def to_truth_value(self):
         n = self.evidence_count
         confidence = n / (n + K) if (n + K) > 0 else 0.0
