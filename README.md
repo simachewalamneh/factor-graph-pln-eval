@@ -118,8 +118,7 @@ cd src && python3 main.py > /dev/null \
   factors between candidates are themselves noisy/uninformative for most
   pairs, so chaining through them adds little genuine signal.
 
-## A note on confidence (worth reading)
-
+## A note on confidence 
 The propagated **confidence** values saturate close to `1.0` for every
 candidate. This is a known consequence of a simplifying assumption made
 explicit rather than hidden: Revision treats every
