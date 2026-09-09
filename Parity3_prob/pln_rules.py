@@ -1,42 +1,78 @@
 from truth_value import TruthValue
-DEDUCTION_DISCOUNT = 0.9
-INDUCTION_DISCOUNT = 0.8
-ABDUCTION_DISCOUNT = 0.8
-DEFAULT_S_B = 0.5 #neutral prior assumption.
 
-def _chain_confidence(c1, c2, discount):
-    return discount * min(c1, c2)
+def clamp(v, lo, hi):
+    return min(hi, max(v, lo))
+def truth_c2w(c):
+    """Confidence -> weight of evidence. w = c / (1-c)."""
+    return c / (1 - c) if c < 1.0 else float("inf")
+def truth_w2c(w):
+    """Weight of evidence -> confidence. c = w / (w+1)."""
+    if w == float("inf"):
+        return 1.0
+    return w / (w + 1)
 
-def deduction(tv_AB: TruthValue, tv_BC: TruthValue, s_B: float = DEFAULT_S_B) -> TruthValue:
-    sAB, sBC = tv_AB.strength, tv_BC.strength
-    sC = sBC  
-    denom = 1 - s_B
-    if denom <= 1e-9:
-        strength = sAB * sBC
+def _smallest_intersection_probability(As, Bs):
+    return clamp((As + Bs - 1) / As, 0, 1) if As > 0 else 0.0
+
+def _largest_intersection_probability(As, Bs):
+    return clamp(Bs / As, 0, 1) if As > 0 else 0.0
+
+def _conditional_probability_consistency(As, Bs, ABs):
+    if As <= 0:
+        return False
+    return _smallest_intersection_probability(As, Bs) <= ABs <= _largest_intersection_probability(As, Bs)
+
+
+def deduction(P: TruthValue, Q: TruthValue, R: TruthValue, PQ: TruthValue, QR: TruthValue) -> TruthValue:
+
+    Ps, Qs, Rs = P.strength, Q.strength, R.strength
+    PQs, PQc = PQ.strength, PQ.confidence
+    QRs, QRc = QR.strength, QR.confidence
+
+    if not (_conditional_probability_consistency(Ps, Qs, PQs) and
+            _conditional_probability_consistency(Qs, Rs, QRs)):
+        return TruthValue(1.0, 0.0)
+
+    if Qs > 0.9999:
+        strength = Rs
     else:
-        strength = sAB * sBC + (1 - sAB) * (sC - s_B * sBC) / denom
-    strength = min(max(strength, 0.0), 1.0)
-    confidence = _chain_confidence(tv_AB.confidence, tv_BC.confidence, DEDUCTION_DISCOUNT)
-    return TruthValue(strength, confidence)
+        strength = PQs * QRs + ((1 - PQs) * (Rs - Qs * QRs)) / (1 - Qs)
 
-def induction(tv_BA: TruthValue, tv_BC: TruthValue) -> TruthValue:
-    sBA, sBC = tv_BA.strength, tv_BC.strength
-    strength = sBA * sBC + (1 - sBA) * (1 - sBC)
-    confidence = _chain_confidence(tv_BA.confidence, tv_BC.confidence, INDUCTION_DISCOUNT)
-    return TruthValue(strength, confidence)
+    confidence = min(P.confidence, Q.confidence, R.confidence, PQc, QRc)
+    return TruthValue(clamp(strength, 0, 1), confidence)
 
-def abduction(tv_AB: TruthValue, tv_CB: TruthValue) -> TruthValue:
-    sAB, sCB = tv_AB.strength, tv_CB.strength
-    strength = sAB * sCB + (1 - sAB) * (1 - sCB)
-    confidence = _chain_confidence(tv_AB.confidence, tv_CB.confidence, ABDUCTION_DISCOUNT)
-    return TruthValue(strength, confidence)
+
+def induction(A: TruthValue, B: TruthValue, C: TruthValue, BA: TruthValue, BC: TruthValue) -> TruthValue:
+    sA, sB, sC = A.strength, B.strength, C.strength
+    sBA, sBC = BA.strength, BC.strength
+
+    term1 = (sBA * sBC * sB) / sA if sA > 0 else 0.0
+    term2 = (1 - (sBA * sB) / sA if sA > 0 else 1) * ((sC - sB * sBC) / (1 - sB) if sB < 1 else 0.0)
+    strength = term1 + term2
+    confidence = truth_w2c(min(BA.confidence, BC.confidence))
+    return TruthValue(clamp(strength, 0, 1), confidence)
+
+
+def abduction(A: TruthValue, B: TruthValue, C: TruthValue, AB: TruthValue, CB: TruthValue) -> TruthValue:
+  
+    sB, sC = B.strength, C.strength
+    sAB, sCB = AB.strength, CB.strength
+
+    term1 = (sAB * sCB * sC) / sB if sB > 0 else 0.0
+    term2 = (sC * (1 - sAB) * (1 - sCB)) / (1 - sB) if sB < 1 else 0.0
+    strength = term1 + term2
+    confidence = truth_w2c(min(AB.confidence, CB.confidence))
+    return TruthValue(clamp(strength, 0, 1), confidence)
+
 
 def revision(tv1: TruthValue, tv2: TruthValue) -> TruthValue:
+
     c1, c2 = tv1.confidence, tv2.confidence
-    total_c = c1 + c2
-    if total_c <= 1e-9:
+    w1, w2 = truth_c2w(c1), truth_c2w(c2)
+    w = w1 + w2
+    if w == 0:
         strength = (tv1.strength + tv2.strength) / 2
     else:
-        strength = (tv1.strength * c1 + tv2.strength * c2) / total_c #2 #confidence-weighted average.
-    confidence = 1 - (1 - c1) * (1 - c2)
-    return TruthValue(strength, confidence)
+        strength = (w1 * tv1.strength + w2 * tv2.strength) / w
+    confidence = min(1.0, max(truth_w2c(w), c1, c2))
+    return TruthValue(min(1.0, strength), confidence)

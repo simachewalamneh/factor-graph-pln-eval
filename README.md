@@ -118,25 +118,6 @@ cd src && python3 main.py > /dev/null \
   factors between candidates are themselves noisy/uninformative for most
   pairs, so chaining through them adds little genuine signal.
 
-## A note on confidence 
-The propagated **confidence** values saturate close to `1.0` for every
-candidate. This is a known consequence of a simplifying assumption made
-explicit rather than hidden: Revision treats every
-Deduction/Induction/Abduction estimate for a given candidate as
-*independent* evidence. In reality, all of these estimates trace back to
-the same 8-row truth table, so they are correlated, not independent —
-Revision's confidence-combination rule (`1 - (1-c1)(1-c2)...`) therefore
-overstates how much is actually known.
-
-A more rigorous version could either (a) discount Revision's confidence
-gain by the estimated evidence overlap between sources, or (b) feed
-Revision only genuinely independent evidence per candidate (e.g. direct
-evidence plus a single best deduced estimate, rather than every
-anchor-pair's induction/abduction estimate). The simpler version was kept
-in place and the caveat documented here, since the goal of this exercise
-was to demonstrate correct *mechanics* of all 4 rules working together —
-and recognizing this independence-assumption flaw is itself part of what
-the deck asks interns to do ("identify where uncertainty enters").
 
 ## PLN rule semantics (short version)
 

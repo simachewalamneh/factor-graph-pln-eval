@@ -1,11 +1,12 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "Parity3_prob"))
 
 from propagate import propagate  # noqa: E402
 from beta_graph import build_direct_evidence_beliefs, build_correlation_factors  # noqa: E402
 from render_factor_graph import draw_factor_graph  # noqa: E402
+
 
 def build_and_render():
     result = propagate()
@@ -17,6 +18,8 @@ def build_and_render():
     def corr_belief(i, j):
         return corr_beliefs.get((i, j)) or corr_beliefs.get((j, i))
 
+    # Two real non-anchor candidates to show propagation reaching beyond
+    # the anchor ring (picked for having a strong correlation to an anchor).
     non_anchors = [c for c in direct_beliefs if c not in anchors]
     non_anchors_sorted = sorted(
         non_anchors,
@@ -33,13 +36,16 @@ def build_and_render():
     ]
 
     factors = []
+    # Direct-evidence factors 
     for c in included:
         factors.append({"var_a": "T", "var_b": f"C{c}", "label": "direct evidence"})
 
+    # Correlation ring among the anchors (adjacent pairs only, for readability).
     for i in range(len(anchors)):
         a, b = anchors[i], anchors[(i + 1) % len(anchors)]
         factors.append({"var_a": f"C{a}", "var_b": f"C{b}", "label": "correlates"})
 
+    # Connect each extra non-anchor candidate to its most-correlated anchor.
     for c in extra:
         best_anchor = max(anchors, key=lambda a: corr_belief(a, c).mean)
         factors.append({"var_a": f"C{best_anchor}", "var_b": f"C{c}", "label": "correlates"})

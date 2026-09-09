@@ -1,4 +1,3 @@
- 
 from parity_data import CANDIDATES, evaluate_candidate, true_outputs
 from propagate import propagate
 
@@ -39,13 +38,17 @@ def main():
     print(f"Best candidate by direct evidence alone : #{best_direct[0]} ({best_direct[1]})")
     print(f"Best candidate after propagation         : #{best_final[0]} ({best_final[1]})")
     print(
-        "\nNote: the confidence values end up almost 1.0 for every candidate. "
-        "This is because Revision treats each new estimate as independent "
-        "evidence, but they aren't , they all come from the same 8-row "
-        "truth table. So confidence grows too fast and becomes misleading. "
-        "A better version would use fewer, truly independent estimates "
-        "per candidate instead of combining every one we generated."
-    ) 
+        "\nNote: propagation leaves every belief unchanged here (final == direct, "
+        "confidence stays at 0.5, never inflating to 1.0). Using the exact MeTTa "
+        "PLN formulas with evidence stamping, no deduced/induced/abducted "
+        "estimate for a candidate is ever more confident than that candidate's "
+        "own direct evidence -- and since every estimate's evidence stamp "
+        "always includes the candidate's own evidence, Revision is never "
+        "licensed to merge them. This replaces an earlier version where "
+        "confidence artificially saturated near 1.0 by treating overlapping "
+        "evidence as independent; the exact formulas correctly refuse to do that."
+    )
+
 
 if __name__ == "__main__":
     main()

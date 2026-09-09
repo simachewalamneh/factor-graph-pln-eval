@@ -1,10 +1,13 @@
 import os
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-from truth_value import beta_from_counts   
-from propagation_engine import propagate_generic  
-from embeddings import similarity_search  
-from frame_data import ALL_FRAMES, FRAMES_BY_ID, parent_child_pairs  
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "Parity3_prob"))
+
+from truth_value import beta_from_counts  # noqa: E402  (reused, not reimplemented)
+from propagation_engine import propagate_generic  # noqa: E402 (reused, not reimplemented)
+
+from embeddings import similarity_search  # noqa: E402
+from frame_data import ALL_FRAMES, FRAMES_BY_ID, parent_child_pairs  # noqa: E402
 
 SIMILARITY_PSEUDO_N = 10
 PARENT_CHILD_BONUS = 4
@@ -15,11 +18,12 @@ def status_to_counts(status):
     if status == "pending":
         return 0.0, 1.0
     if status == "active":
-        return 0.5, 0.5  
+        return 0.5, 0.5  # still in progress
     raise ValueError(f"Unknown status: {status}")
 
+
 def build_direct_evidence():
-    """Direct evidence per frame, from its own status field."""
+   #Direct evidence per frame.
     direct_tv = {}
     for frame in ALL_FRAMES:
         s, f = status_to_counts(frame.status)
@@ -27,9 +31,11 @@ def build_direct_evidence():
         direct_tv[frame.frame_id] = belief.to_truth_value()
     return direct_tv
 
+
 def build_correlation_factors():
     sims = similarity_search(ALL_FRAMES)
     parent_child = set(parent_child_pairs()) | {(b, a) for a, b in parent_child_pairs()}
+
     corr_tv = {}
     for (i, j), sim in sims.items():
         successes = sim * SIMILARITY_PSEUDO_N
@@ -41,12 +47,14 @@ def build_correlation_factors():
         corr_tv[(i, j)] = belief.to_truth_value()
     return corr_tv
 
+
 def run(top_k_anchors=5):
     direct_tv = build_direct_evidence()
     corr_tv = build_correlation_factors()
     result = propagate_generic(direct_tv, corr_tv, top_k_anchors=top_k_anchors)
     result["parent_child_pairs"] = parent_child_pairs()
     return result
+
 
 if __name__ == "__main__":
     result = run()

@@ -45,17 +45,18 @@ def main():
         print(f"  {frame_id:<4} direct s={d.strength:.3f} -> final s={f.strength:.3f}  (delta {delta:+.3f}), confidence {f.confidence:.3f}")
 
     print("\n" + "-" * 78)
-    print("CAVEAT (same root cause as the main task, inherited from the shared engine)")
+    print("NOTE: exact MeTTa PLN formulas + evidence stamping (shared engine)")
     print("-" * 78)
     print(
-        "Confidence ends up near 1.0 for every frame, same as in the main task. "
-        "The reason is the same too: Revision treats every deduced, induced, "
-        "and abducted estimate as independent evidence, but they aren't -- many "
-        "come from overlapping similarity scores and the same few anchors. "
-        "Seeing the same problem here confirms the engine really is shared "
-        "(src/propagation_engine.py), not rebuilt separately for each task."
+        "Confidence here stays bounded (well under 1.0), unlike an earlier version\n"
+        "where it saturated near 1.0 for every frame. Unlike the main task -- where\n"
+        "propagation always leaves beliefs unchanged -- some frames DO shift here,\n"
+        "because frame-to-frame evidence stamps aren't always overlapping the way\n"
+        "candidate-to-candidate ones are in the main task, so Revision sometimes\n"
+        "finds genuinely disjoint evidence to merge. Same engine, same formulas\n"
+        "(Parity3_prob/propagation_engine.py) -- the different outcome reflects a real\n"
+        "structural difference between the two domains, not a reimplementation."
     )
-
 
 if __name__ == "__main__":
     main()

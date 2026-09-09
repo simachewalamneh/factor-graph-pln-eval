@@ -1,15 +1,20 @@
+
 from dataclasses import dataclass
+
 K = 8
-PRIOR_ALPHA = 1.0  
+
+PRIOR_ALPHA = 1.0  # (Beta(1,1) = uniform)
 PRIOR_BETA = 1.0
+
 
 @dataclass
 class TruthValue:
-    strength: float   
+    strength: float  
     confidence: float  
 
     def __repr__(self):
         return f"<s={self.strength:.3f}, c={self.confidence:.3f}>"
+
 
 @dataclass
 class BetaBelief:
@@ -22,8 +27,9 @@ class BetaBelief:
 
     @property
     def evidence_count(self):
+        """Evidence beyond the prior."""
         return (self.alpha + self.beta) - (PRIOR_ALPHA + PRIOR_BETA)
-        #bridge between Beta and PLN:
+
     def to_truth_value(self):
         n = self.evidence_count
         confidence = n / (n + K) if (n + K) > 0 else 0.0
@@ -32,6 +38,7 @@ class BetaBelief:
     def update(self, successes, failures):
         """Beta-Bernoulli conjugate update: additive in successes/failures."""
         return BetaBelief(self.alpha + successes, self.beta + failures)
+
 
 def beta_from_counts(successes, failures):
     return BetaBelief(PRIOR_ALPHA + successes, PRIOR_BETA + failures)

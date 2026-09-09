@@ -9,14 +9,13 @@ def tokenize(text):
 def frame_text(frame):
     return f"{frame.deliverable} {frame.results}"
 
-
 def build_vectors(frames):
     docs = {f.frame_id: tokenize(frame_text(f)) for f in frames}
     n_docs = len(docs)
     doc_freq = Counter()
     for words in docs.values():
         doc_freq.update(set(words))
-
+        
     vectors = {}
     for frame_id, words in docs.items():
         term_freq = Counter(words)
